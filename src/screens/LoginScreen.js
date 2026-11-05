@@ -9,8 +9,12 @@ import {
   StatusBar,
   KeyboardAvoidingView,
   ScrollView,
+  Alert,
+  ActivityIndicator,
 } from 'react-native';
 import Svg, { Path, Circle, Rect } from 'react-native-svg';
+import { login as apiLogin, setAuthToken } from '../services/api';
+import { saveProfile, saveToken } from '../services/storage';
 
 // ─── Paleta ──────────────────────────────────────────────────────────────────
 const C = {
@@ -74,9 +78,42 @@ function EyeIcon({ visible }) {
 }
 
 export default function LoginScreen({ navigation }) {
-  const [cpf, setCpf]             = useState('');
+  const [email, setEmail]         = useState('');
   const [senha, setSenha]         = useState('');
   const [showSenha, setShowSenha] = useState(false);
+  const [loading, setLoading]     = useState(false);
+  const [erro, setErro]           = useState('');
+
+  async function handleLogin() {
+    const emailTrim = email.trim();
+    if (!emailTrim || !senha) {
+      setErro('Preencha o e-mail e a senha.');
+      return;
+    }
+    setErro('');
+    setLoading(true);
+    try {
+      const data = await apiLogin({ email: emailTrim, senha });
+      setAuthToken(data.token);
+      // Persiste token e perfil localmente (restaura sessão ao reabrir o app)
+      await saveToken(data.token);
+      await saveProfile({
+        nome: data.user.nome,
+        email: data.user.email,
+        telefone: data.user.telefone ?? '',
+        cpf: data.user.cpf ?? '',
+        tema: data.user.tema ?? 'claro',
+        notificacoes: data.user.notificacoes ?? true,
+        token: data.token,
+      });
+      navigation.navigate('InicioOpcao');
+    } catch (err) {
+      const msg = err instanceof Error ? err.message : 'Erro ao fazer login.';
+      setErro(msg);
+    } finally {
+      setLoading(false);
+    }
+  }
 
   return (
     <KeyboardAvoidingView
@@ -98,19 +135,23 @@ export default function LoginScreen({ navigation }) {
         <Text style={s.title}>Entrar</Text>
         <Text style={s.subtitle}>Acesse sua conta para continuar.</Text>
 
+        {/* Mensagem de erro */}
+        {!!erro && <Text style={s.errorMsg}>{erro}</Text>}
+
         {/* Campos */}
         <View style={s.form}>
-          {/* CPF / e-mail */}
+          {/* E-mail */}
           <View style={s.inputRow}>
             <View style={s.inputIcon}><PersonIcon /></View>
             <TextInput
               style={s.input}
-              placeholder="CPF ou e-mail"
+              placeholder="E-mail"
               placeholderTextColor={C.placeholder}
-              value={cpf}
-              onChangeText={setCpf}
+              value={email}
+              onChangeText={setEmail}
               autoCapitalize="none"
               keyboardType="email-address"
+              autoComplete="email"
             />
           </View>
 
@@ -132,9 +173,16 @@ export default function LoginScreen({ navigation }) {
         </View>
 
         {/* Botão entrar */}
-        <TouchableOpacity style={s.btnPrimary} activeOpacity={0.85}
-          onPress={() => navigation.navigate('InicioOpcao')}>
-          <Text style={s.btnPrimaryText}>Entrar</Text>
+        <TouchableOpacity
+          style={[s.btnPrimary, loading && { opacity: 0.7 }]}
+          activeOpacity={0.85}
+          onPress={handleLogin}
+          disabled={loading}
+        >
+          {loading
+            ? <ActivityIndicator color="#fff" />
+            : <Text style={s.btnPrimaryText}>Entrar</Text>
+          }
         </TouchableOpacity>
 
         {/* Esqueci senha */}
@@ -164,7 +212,9 @@ const s = StyleSheet.create({
   headerTitle:  { fontSize: 18, fontWeight: '700', color: C.navy },
 
   title:    { fontSize: 34, fontWeight: '800', color: C.navy, marginBottom: 6 },
-  subtitle: { fontSize: 14, color: C.textMed, marginBottom: 32 },
+  subtitle: { fontSize: 14, color: C.textMed, marginBottom: 16 },
+  errorMsg: { fontSize: 13, color: C.error, backgroundColor: '#FFF5F5',
+    borderRadius: 8, padding: 10, marginBottom: 12, borderWidth: 1, borderColor: '#FEB2B2' },
 
   form:     { marginBottom: 20 },
 

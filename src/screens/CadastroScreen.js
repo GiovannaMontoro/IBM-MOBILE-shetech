@@ -17,7 +17,8 @@ import {
   Platform, StatusBar, KeyboardAvoidingView, ScrollView, Alert,
 } from 'react-native';
 import Svg, { Path, Circle, Rect } from 'react-native-svg';
-import { saveProfile } from '../services/storage';
+import { saveProfile, saveToken } from '../services/storage';
+import { register as apiRegister, setAuthToken } from '../services/api';
 
 const SB_H = Platform.OS === 'android' ? 28 : 44;
 const C = { bg: '#FFFFFF', navy: '#1B3A6B', blue: '#1F5FD0', yellow: '#F5C518', gray: '#F4F6FB', grayBorder: '#E8ECF4', textMed: '#4A5568', placeholder: '#A0AEC0', error: '#E53E3E' };
@@ -144,23 +145,32 @@ export default function CadastroScreen({ navigation }) {
     if (!validate()) return;
     setLoading(true);
     try {
-      // Salva o perfil no armazenamento local
-      await saveProfile({
+      // Tenta cadastrar no backend real
+      const data = await apiRegister({
         nome: nome.trim(),
         email: email.trim(),
+        senha,
+        confirma_senha: confirma,
+        cpf: cpf.trim(),
         telefone: telefone.trim(),
-        twoFA: false,
-        theme: 'light',
-        analises: 0,
-        bloqueios: 0,
-        simulacoes: 0,
-        diasAtivo: 0,
       });
-      Alert.alert(
-        'Cadastro realizado!',
-        'Sua conta foi criada com sucesso. Faça login para continuar.',
-        [{ text: 'Fazer login', onPress: () => navigation.navigate('Login') }]
-      );
+      // Guarda token e persiste perfil (restaura sessão ao reabrir o app)
+      setAuthToken(data.token);
+      await saveToken(data.token);
+      await saveProfile({
+        nome: data.user.nome,
+        email: data.user.email,
+        telefone: data.user.telefone ?? '',
+        cpf: data.user.cpf ?? '',
+        tema: data.user.tema ?? 'claro',
+        notificacoes: data.user.notificacoes ?? true,
+        token: data.token,
+      });
+      // Vai direto para a tela principal (já autenticado)
+      navigation.navigate('InicioOpcao');
+    } catch (err) {
+      const msg = err instanceof Error ? err.message : 'Erro ao criar conta.';
+      Alert.alert('Erro no cadastro', msg);
     } finally {
       setLoading(false);
     }

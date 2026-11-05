@@ -1,13 +1,14 @@
 /**
  * Armazenamento local persistente com AsyncStorage.
- * Usado para: histórico de testes, preferências, perfil.
+ * Usado para: histórico de testes, preferências, perfil, token JWT.
  */
 import AsyncStorage from '@react-native-async-storage/async-storage';
 
 const KEYS = {
-  PROFILE: 'shetech_profile',
-  HISTORY: 'shetech_history',
-  PREFERENCES: 'shetech_prefs',
+  PROFILE:  'shetech_profile',
+  HISTORY:  'shetech_history',
+  PREFS:    'shetech_prefs',
+  TOKEN:    'shetech_token',
 };
 
 // ─── Perfil ───────────────────────────────────────────────────────────────────
@@ -75,7 +76,7 @@ export async function clearHistory() {
 
 export async function getPreferences() {
   try {
-    const json = await AsyncStorage.getItem(KEYS.PREFERENCES);
+    const json = await AsyncStorage.getItem(KEYS.PREFS);
     return json ? JSON.parse(json) : { theme: 'light' };
   } catch {
     return { theme: 'light' };
@@ -84,7 +85,44 @@ export async function getPreferences() {
 
 export async function savePreferences(prefs) {
   try {
-    await AsyncStorage.setItem(KEYS.PREFERENCES, JSON.stringify(prefs));
+    await AsyncStorage.setItem(KEYS.PREFS, JSON.stringify(prefs));
+    return true;
+  } catch {
+    return false;
+  }
+}
+
+// ─── Token JWT ────────────────────────────────────────────────────────────────
+
+/**
+ * Persiste o token JWT no AsyncStorage para restaurar sessão ao reabrir o app.
+ */
+export async function saveToken(token) {
+  try {
+    await AsyncStorage.setItem(KEYS.TOKEN, token);
+    return true;
+  } catch {
+    return false;
+  }
+}
+
+/**
+ * Recupera o token JWT salvo. Retorna null se não houver.
+ */
+export async function getSavedToken() {
+  try {
+    return await AsyncStorage.getItem(KEYS.TOKEN);
+  } catch {
+    return null;
+  }
+}
+
+/**
+ * Remove o token (logout).
+ */
+export async function removeToken() {
+  try {
+    await AsyncStorage.removeItem(KEYS.TOKEN);
     return true;
   } catch {
     return false;

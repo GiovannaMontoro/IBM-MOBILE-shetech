@@ -1,0 +1,60 @@
+# SheTech Mobile Backend — dependências Python
+# Instale com: pip install -r requirements.txt
+
+# ── Framework ─────────────────────────────────────────────────────────────────
+fastapi>=0.111.0
+uvicorn[standard]>=0.29.0
+pydantic>=2.7.4
+pydantic[email]>=2.7.4
+pydantic-settings>=2.3.0
+python-dotenv>=1.0.1
+python-multipart>=0.0.9          # upload de arquivos (imagem/áudio)
+
+# ── Banco de dados ────────────────────────────────────────────────────────────
+sqlalchemy>=2.0.30
+aiosqlite>=0.20.0
+
+# ── Autenticação ──────────────────────────────────────────────────────────────
+bcrypt>=4.1.0                    # hash de senhas
+python-jose[cryptography]>=3.3.0 # JWT
+
+# ── LangGraph (pipeline do Guardião) ─────────────────────────────────────────
+langgraph>=0.1.9
+langchain-core>=0.2.19
+
+# ── Processamento multimodal LOCAL (sem API externa) ─────────────────────────
+# Imagens: OCR local via EasyOCR + Pillow
+# Áudio:   transcrição local via openai-whisper (PyTorch CPU)
+#
+# INSTALAÇÃO:
+#   pip install easyocr openai-whisper torch imageio-ffmpeg
+#
+# Na primeira execução, os modelos são baixados automaticamente (~150 MB no total).
+# Requer internet apenas na 1ª execução; funciona offline depois.
+#
+# Para instalar tudo de uma vez (pode demorar pelo torch):
+#   pip install -r requirements.txt
+#
+Pillow>=10.0.0
+easyocr>=1.7.0
+openai-whisper>=20230918
+torch>=2.0.0                     # CPU é suficiente; para GPU instale a variante CUDA
+imageio-ffmpeg>=0.4.9            # bundla ffmpeg estático — sem instalação manual
+
+# ── Provedores LLM opcionais ──────────────────────────────────────────────────
+# Descomente e configure o .env para usar IA real:
+#
+# IBM watsonx.ai:
+# ibm-watsonx-ai>=1.0.4
+#
+# OpenAI:
+# openai>=1.30.1
+
+# ── Utilitários ───────────────────────────────────────────────────────────────
+httpx>=0.27.0
+structlog>=24.1.0
+
+# ── Testes ────────────────────────────────────────────────────────────────────
+pytest>=8.2.0
+pytest-asyncio>=0.23.7
+httpx>=0.27.0                    # cliente HTTP para testes

@@ -20,7 +20,7 @@ import {
 import * as ImagePicker from 'expo-image-picker';
 import * as DocumentPicker from 'expo-document-picker';
 import Svg, { Path, Circle, Rect } from 'react-native-svg';
-import { analyzeMessage, analyzeFile } from '../services/api';
+import { analyzeMessage, analyzeFile, saveHistoryEntry } from '../services/api';
 import { addHistoryEntry } from '../services/storage';
 
 const { width } = Dimensions.get('window');
@@ -191,14 +191,24 @@ export default function GuardiaoScreen({ navigation }) {
         });
       }
       setResult(data);
-      // Salvar no histórico local
-      await addHistoryEntry({
+      // Salvar no histórico local (sempre funciona, offline também)
+      const entry = {
         id: Date.now().toString(),
         type: attachment ? attachment.type : 'mensagem',
         title: attachment ? attachment.name : message.substring(0, 60) + (message.length > 60 ? '…' : ''),
         riskLabel: data.risk_label,
         riskScore: data.risk_score,
         date: new Date().toLocaleString('pt-BR'),
+      };
+      await addHistoryEntry(entry);
+      // Sincroniza com o servidor em segundo plano (silencioso se offline)
+      saveHistoryEntry({
+        id: entry.id,
+        tipo: entry.type,
+        titulo: entry.title,
+        riskLabel: entry.riskLabel,
+        riskScore: entry.riskScore,
+        date: entry.date,
       });
     } catch (err) {
       const msg = err instanceof Error ? err.message : 'Erro ao analisar.';
