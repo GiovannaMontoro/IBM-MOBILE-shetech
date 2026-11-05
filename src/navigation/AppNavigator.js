@@ -2,46 +2,68 @@ import React from 'react';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 
-import HomeScreen    from '../screens/HomeScreen';
-import LearnScreen   from '../screens/LearnScreen';
-import ProfileScreen from '../screens/ProfileScreen';
-import MenuScreen    from '../screens/MenuScreen';
-import LoginScreen   from '../screens/LoginScreen';
-import CadastroScreen from '../screens/CadastroScreen';
+// ── Telas existentes atualizadas ──────────────────────────────────────────────
+import HomeScreen             from '../screens/HomeScreen';
+import LoginScreen            from '../screens/LoginScreen';
+import CadastroScreen         from '../screens/CadastroScreen';
+
+// ── Novas telas completas ─────────────────────────────────────────────────────
+import InicioOpcaoScreen          from '../screens/InicioOpcaoScreen';
+import MenuScreen                 from '../screens/MenuScreen';
+import MonitoramentoGuardiaoScreen from '../screens/MonitoramentoGuardiaoScreen';
+import GuardiaoScreen             from '../screens/GuardiaoScreen';
+import ApresentacaoDecisionScreen from '../screens/ApresentacaoDecisionScreen';
+import BBDecisionScreen           from '../screens/BBDecisionScreen';
+import AprenderScreen             from '../screens/AprenderScreen';
+import TesteMensagemScreen        from '../screens/TesteMensagemScreen';
+import TesteLinkScreen            from '../screens/TesteLinkScreen';
+import TesteTransacoesScreen      from '../screens/TesteTransacoesScreen';
+import TesteAplicativosScreen     from '../screens/TesteAplicativosScreen';
+import ProfileScreen              from '../screens/ProfileScreen';
+import HistoricoScreen            from '../screens/HistoricoScreen';
+import ChatbotScreen              from '../screens/ChatbotScreen';
 
 const Stack = createNativeStackNavigator();
-const Tab   = createBottomTabNavigator();
 
-// Tab navigator (tela interna do app — Início, Aprender, Perfil)
-function MainTabs() {
-  return (
-    <Tab.Navigator
-      screenOptions={{
-        headerShown: false,
-        tabBarStyle: { display: 'none' }, // Nav customizada dentro de cada tela
-      }}
-    >
-      <Tab.Screen name="Home"    component={HomeScreen}    />
-      <Tab.Screen name="Learn"   component={LearnScreen}   />
-      <Tab.Screen name="Profile" component={ProfileScreen} />
-    </Tab.Navigator>
-  );
-}
-
-// Stack raiz — inclui o fluxo de autenticação + telas de menu
+/**
+ * Navegador raiz — Stack puro com headerShown: false.
+ * Todas as telas são acessíveis diretamente por nome.
+ * Fluxo padrão: Home (página inicial animada) → InicioOpcao (página principal)
+ */
 export default function AppNavigator() {
   return (
     <Stack.Navigator
       screenOptions={{ headerShown: false, animation: 'slide_from_right' }}
-      initialRouteName="Main"
+      initialRouteName="Home"
     >
-      {/* Telas do app principal */}
-      <Stack.Screen name="Main"     component={MainTabs}      />
-      <Stack.Screen name="Menu"     component={MenuScreen}    />
+      {/* ── Tela inicial animada (splash/landing) ── */}
+      <Stack.Screen name="Home"     component={HomeScreen} />
 
-      {/* Fluxo de autenticação */}
-      <Stack.Screen name="Login"    component={LoginScreen}   />
+      {/* ── Autenticação ── */}
+      <Stack.Screen name="Login"    component={LoginScreen} />
       <Stack.Screen name="Cadastro" component={CadastroScreen} />
+
+      {/* ── Página principal pós-login ── */}
+      <Stack.Screen name="InicioOpcao" component={InicioOpcaoScreen} />
+      <Stack.Screen name="Menu"        component={MenuScreen} />
+      <Stack.Screen name="Profile"     component={ProfileScreen} />
+      <Stack.Screen name="Historico"   component={HistoricoScreen} />
+      <Stack.Screen name="Chatbot"     component={ChatbotScreen} />
+
+      {/* ── Guardião ── */}
+      <Stack.Screen name="MonitoramentoGuardiao" component={MonitoramentoGuardiaoScreen} />
+      <Stack.Screen name="Guardiao"              component={GuardiaoScreen} />
+
+      {/* ── BB Decision ── */}
+      <Stack.Screen name="ApresentacaoDecision" component={ApresentacaoDecisionScreen} />
+      <Stack.Screen name="BBDecision"           component={BBDecisionScreen} />
+
+      {/* ── Educação ── */}
+      <Stack.Screen name="Aprender"         component={AprenderScreen} />
+      <Stack.Screen name="TesteMensagem"    component={TesteMensagemScreen} />
+      <Stack.Screen name="TesteLink"        component={TesteLinkScreen} />
+      <Stack.Screen name="TesteTransacoes"  component={TesteTransacoesScreen} />
+      <Stack.Screen name="TesteAplicativos" component={TesteAplicativosScreen} />
     </Stack.Navigator>
   );
 }

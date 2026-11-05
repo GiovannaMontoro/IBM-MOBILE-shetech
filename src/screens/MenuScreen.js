@@ -1,192 +1,156 @@
+/**
+ * MenuScreen — Menu completo de navegação.
+ * Todos os destinos do app em um só lugar.
+ */
 import React from 'react';
 import {
-  View,
-  Text,
-  StyleSheet,
-  TouchableOpacity,
-  Platform,
-  StatusBar,
+  View, Text, StyleSheet, TouchableOpacity, ScrollView,
+  Platform, StatusBar, Image,
 } from 'react-native';
-import Svg, { Path, Circle, Rect } from 'react-native-svg';
+import Svg, { Path, Circle } from 'react-native-svg';
 
-// ─── Paleta ──────────────────────────────────────────────────────────────────
-const C = {
-  bg:          '#FFFFFF',
-  navy:        '#1B3A6B',
-  blue:        '#1F5FD0',
-  yellow:      '#F5C518',
-  yellowLight: '#FFF3B0',
-  gray:        '#F4F6FB',
-  grayBorder:  '#E8ECF4',
-  textMed:     '#4A5568',
-  navInactive: '#8A94A6',
-};
-
-// ─── Ícones SVG ───────────────────────────────────────────────────────────────
-function HouseIcon() {
-  return (
-    <Svg width={28} height={28} viewBox="0 0 24 24" fill="none">
-      <Path d="M3 12L12 4l9 8" stroke={C.navy} strokeWidth={2} strokeLinecap="round" strokeLinejoin="round" />
-      <Path d="M5 10v9a1 1 0 001 1h4v-4h4v4h4a1 1 0 001-1v-9" stroke={C.navy} strokeWidth={2} strokeLinecap="round" strokeLinejoin="round" />
-    </Svg>
-  );
-}
-
-function BookOpenIcon() {
-  return (
-    <Svg width={28} height={28} viewBox="0 0 24 24" fill="none">
-      <Path d="M2 6s1.5-2 5-2 5 2 5 2v13s-1.5-1-5-1-5 1-5 1V6z" stroke={C.navy} strokeWidth={2} strokeLinecap="round" strokeLinejoin="round" />
-      <Path d="M12 6s1.5-2 5-2 5 2 5 2v13s-1.5-1-5-1-5 1-5 1V6z" stroke={C.navy} strokeWidth={2} strokeLinecap="round" strokeLinejoin="round" />
-    </Svg>
-  );
-}
-
-function PersonIcon() {
-  return (
-    <Svg width={28} height={28} viewBox="0 0 24 24" fill="none">
-      <Circle cx="12" cy="8" r="4" stroke={C.navy} strokeWidth={2} />
-      <Path d="M4 20c0-4 3.6-7 8-7s8 3 8 7" stroke={C.navy} strokeWidth={2} strokeLinecap="round" />
-    </Svg>
-  );
-}
-
-function HomeIconNav({ active }) {
-  return (
-    <Svg width={22} height={22} viewBox="0 0 24 24" fill="none">
-      <Path d="M3 12L12 4l9 8" stroke={active ? C.navy : C.navInactive} strokeWidth={2.2} strokeLinecap="round" strokeLinejoin="round" />
-      <Path d="M5 10v9a1 1 0 001 1h4v-4h4v4h4a1 1 0 001-1v-9" stroke={active ? C.navy : C.navInactive} strokeWidth={2.2} strokeLinecap="round" strokeLinejoin="round" />
-    </Svg>
-  );
-}
-
-function BookIconNav({ active }) {
-  return (
-    <Svg width={22} height={22} viewBox="0 0 24 24" fill="none">
-      <Path d="M2 6s1.5-2 5-2 5 2 5 2v13s-1.5-1-5-1-5 1-5 1V6z" stroke={active ? C.navy : C.navInactive} strokeWidth={2} strokeLinecap="round" strokeLinejoin="round" />
-      <Path d="M12 6s1.5-2 5-2 5 2 5 2v13s-1.5-1-5-1-5 1-5 1V6z" stroke={active ? C.navy : C.navInactive} strokeWidth={2} strokeLinecap="round" strokeLinejoin="round" />
-    </Svg>
-  );
-}
-
-function ProfileIconNav({ active }) {
-  return (
-    <Svg width={22} height={22} viewBox="0 0 24 24" fill="none">
-      <Circle cx="12" cy="8" r="4" stroke={active ? C.navy : C.navInactive} strokeWidth={2} />
-      <Path d="M4 20c0-4 3.6-7 8-7s8 3 8 7" stroke={active ? C.navy : C.navInactive} strokeWidth={2} strokeLinecap="round" />
-    </Svg>
-  );
-}
-
-function ChevronRight() {
-  return (
-    <Svg width={18} height={18} viewBox="0 0 24 24" fill="none">
-      <Path d="M9 18l6-6-6-6" stroke={C.navy} strokeWidth={2} strokeLinecap="round" strokeLinejoin="round" />
-    </Svg>
-  );
-}
-
-const SB_H  = Platform.OS === 'android' ? 28 : 44;
-const NAV_H = Platform.OS === 'android' ? 60 : 80;
+const SB_H = Platform.OS === 'android' ? 28 : 44;
+const C = { navy: '#002a63', blue: '#1F5FD0', yellow: '#fcd116', white: '#fff', gray: '#f7f8fb', muted: '#57606a', border: '#e5e7eb' };
 
 const MENU_ITEMS = [
-  { label: 'Início',    sub: 'Acesse suas ferramentas\nde proteção e simulações.', Icon: HouseIcon,   screen: 'Home'    },
-  { label: 'Aprender', sub: 'Dicas e informações sobre\ngolpes e segurança.',      Icon: BookOpenIcon,screen: 'Learn'   },
-  { label: 'Perfil',   sub: 'Seus dados e configurações.',                          Icon: PersonIcon,  screen: 'Profile' },
+  {
+    section: 'Principal',
+    items: [
+      { icon: '🏠', label: 'Início', sub: 'Página principal do app', screen: 'InicioOpcao' },
+    ],
+  },
+  {
+    section: 'Guardião',
+    items: [
+      { icon: '🛡️', label: 'Guardião', sub: 'Apresentação e recursos', screen: 'MonitoramentoGuardiao' },
+      { icon: '🔍', label: 'Analisar mensagem', sub: 'Análise com IA de texto, imagem e áudio', screen: 'Guardiao' },
+    ],
+  },
+  {
+    section: 'BB Decision',
+    items: [
+      { icon: '💡', label: 'BB Decision', sub: 'Apresentação do simulador', screen: 'ApresentacaoDecision' },
+      { icon: '📊', label: 'Fazer simulação', sub: 'Simule decisões financeiras', screen: 'BBDecision' },
+    ],
+  },
+  {
+    section: 'Educação',
+    items: [
+      { icon: '📚', label: 'Aprender', sub: 'Biblioteca sobre golpes e fraudes', screen: 'Aprender' },
+      { icon: '✉️', label: 'Teste de mensagem', sub: '5 mensagens para identificar', screen: 'TesteMensagem' },
+      { icon: '🔗', label: 'Teste de link', sub: 'Identifique links suspeitos', screen: 'TesteLink' },
+      { icon: '💸', label: 'Teste de transação', sub: 'Identifique transações suspeitas', screen: 'TesteTransacoes' },
+      { icon: '📱', label: 'Teste de aplicativo', sub: 'Identifique apps suspeitos', screen: 'TesteAplicativos' },
+    ],
+  },
+  {
+    section: 'Conta',
+    items: [
+      { icon: '👤', label: 'Perfil', sub: 'Dados, segurança e preferências', screen: 'Profile' },
+      { icon: '📋', label: 'Histórico', sub: 'Todas as análises e testes realizados', screen: 'Historico' },
+      { icon: '💬', label: 'Chatbot', sub: 'Assistente virtual do Guardião', screen: 'Chatbot' },
+    ],
+  },
 ];
 
-// Navega para uma tab dentro do MainTabs
-function goToTab(navigation, tab) {
-  navigation.navigate('Main', { screen: tab });
-}
-
 export default function MenuScreen({ navigation }) {
+  function navTo(screen) {
+    navigation.navigate(screen);
+  }
+
   return (
     <View style={s.root}>
-      <StatusBar barStyle="dark-content" backgroundColor={C.bg} />
+      <StatusBar barStyle="light-content" backgroundColor={C.navy} />
 
-      <View style={s.content}>
-        {/* Badge número 2 + título */}
-        <View style={s.headerRow}>
-          <View style={s.badge}><Text style={s.badgeNum}>2</Text></View>
-          <Text style={s.headerTitle}>Menu</Text>
-        </View>
-
-        {/* Logo Guardião */}
-        <View style={s.logoBlock}>
-          <Text style={s.logoText}>Guardião</Text>
-          {/* tracinhos decorativos amarelos */}
-          <Svg width={60} height={50} style={s.sparkle} pointerEvents="none">
-            <Rect x={12} y={40} width={12} height={4} rx={6} fill={C.yellow} transform="rotate(-127, 24, 32)" />
-            <Rect x={26} y={25} width={14} height={4} rx={6} fill={C.yellow} transform="rotate(-90, 38, 18)" />
-            <Rect x={44} y={33} width={12} height={4} rx={6} fill={C.yellow} transform="rotate(-42, 42, 28)" />
+      {/* Header */}
+      <View style={s.header}>
+        <TouchableOpacity onPress={() => navigation.goBack()} activeOpacity={0.8} style={s.backBtn}>
+          <Svg width={22} height={22} viewBox="0 0 24 24" fill="none">
+            <Path d="M19 12H5M5 12l7 7M5 12l7-7" stroke={C.white} strokeWidth={2.2} strokeLinecap="round" strokeLinejoin="round" />
           </Svg>
-          <Text style={s.logoSub}>Seu aliado contra golpes.</Text>
+        </TouchableOpacity>
+        <View>
+          <Text style={s.headerTitle}>Menu</Text>
+          <Text style={s.headerSub}>Acesso a todas as funcionalidades</Text>
         </View>
+        {/* Logo */}
+        <Svg width={28} height={28} viewBox="0 0 24 24" style={{ marginLeft: 'auto' }}>
+          <Path d="M12 2 4 5v6c0 5 3.4 9.4 8 11 4.6-1.6 8-6 8-11V5l-8-3Z" fill={C.yellow}/>
+          <Path d="m8.5 12 2.6 2.6L16 9.7" stroke={C.navy} strokeWidth={2.2} fill="none" strokeLinecap="round" strokeLinejoin="round"/>
+        </Svg>
+      </View>
 
-        {/* Itens do menu */}
-        {MENU_ITEMS.map(({ label, sub, Icon, screen }) => (
-          <TouchableOpacity
-            key={label}
-            style={s.menuCard}
-            activeOpacity={0.8}
-            onPress={() => goToTab(navigation, screen)}
-          >
-            <View style={s.iconCircle}>
-              <Icon />
+      <ScrollView style={s.scroll} showsVerticalScrollIndicator={false}>
+        {MENU_ITEMS.map((section, si) => (
+          <View key={si} style={s.section}>
+            <Text style={s.sectionLabel}>{section.section}</Text>
+            <View style={s.sectionCard}>
+              {section.items.map((item, ii) => (
+                <View key={ii}>
+                  <TouchableOpacity style={s.menuItem} onPress={() => navTo(item.screen)} activeOpacity={0.8}>
+                    <View style={s.menuIconWrap}>
+                      <Text style={s.menuIcon}>{item.icon}</Text>
+                    </View>
+                    <View style={s.menuText}>
+                      <Text style={s.menuLabel}>{item.label}</Text>
+                      <Text style={s.menuSub}>{item.sub}</Text>
+                    </View>
+                    <Text style={s.menuArrow}>›</Text>
+                  </TouchableOpacity>
+                  {ii < section.items.length - 1 && <View style={s.divider} />}
+                </View>
+              ))}
             </View>
-            <View style={s.menuText}>
-              <Text style={s.menuLabel}>{label}</Text>
-              <Text style={s.menuSub}>{sub}</Text>
-            </View>
-            <ChevronRight />
-          </TouchableOpacity>
+          </View>
         ))}
-      </View>
 
-      {/* Bottom Nav */}
-      <View style={s.bottomNav}>
-        <View style={s.navPill}>
-          <TouchableOpacity style={s.navItem} onPress={() => goToTab(navigation, 'Home')}>
-            <HomeIconNav active={false} />
-            <Text style={s.navLabel}>Início</Text>
-          </TouchableOpacity>
-          <TouchableOpacity style={s.navItem} onPress={() => goToTab(navigation, 'Learn')}>
-            <BookIconNav active={false} />
-            <Text style={s.navLabel}>Aprender</Text>
-          </TouchableOpacity>
-          <TouchableOpacity style={s.navItem} onPress={() => goToTab(navigation, 'Profile')}>
-            <ProfileIconNav active={true} />
-            <Text style={s.navLabelActive}>Perfil</Text>
-          </TouchableOpacity>
+        {/* Sair */}
+        <View style={s.section}>
+          <View style={s.sectionCard}>
+            <TouchableOpacity style={s.menuItem}
+              onPress={() => navigation.navigate('Login')} activeOpacity={0.8}>
+              <View style={[s.menuIconWrap, { backgroundColor: '#fef2f2' }]}>
+                <Text style={s.menuIcon}>🚪</Text>
+              </View>
+              <View style={s.menuText}>
+                <Text style={[s.menuLabel, { color: '#b91c1c' }]}>Sair</Text>
+                <Text style={s.menuSub}>Volta para a tela de login</Text>
+              </View>
+              <Text style={s.menuArrow}>›</Text>
+            </TouchableOpacity>
+          </View>
         </View>
-      </View>
+
+        <View style={s.footer}>
+          <Text style={s.footerBrand}>SheTech × Banco do Brasil</Text>
+          <Text style={s.footerText}>Um projeto SheTech em parceria com o Banco do Brasil.</Text>
+        </View>
+      </ScrollView>
     </View>
   );
 }
 
 const s = StyleSheet.create({
-  root:        { flex: 1, backgroundColor: C.bg },
-  content:     { flex: 1, paddingTop: SB_H + 12, paddingHorizontal: 20, paddingBottom: NAV_H },
+  root: { flex: 1, backgroundColor: '#f7f8fb' },
+  scroll: { flex: 1 },
+  header: { backgroundColor: C.navy, paddingTop: SB_H + 8, paddingBottom: 14, paddingHorizontal: 20, flexDirection: 'row', alignItems: 'center' },
+  backBtn: { marginRight: 12, padding: 4 },
+  headerTitle: { fontSize: 20, fontWeight: '900', color: C.white },
+  headerSub: { fontSize: 12, color: 'rgba(255,255,255,0.7)' },
 
-  headerRow:   { flexDirection: 'row', alignItems: 'center', marginBottom: 24 },
-  badge:       { width: 32, height: 32, borderRadius: 16, backgroundColor: C.navy, justifyContent: 'center', alignItems: 'center', marginRight: 10 },
-  badgeNum:    { color: '#fff', fontWeight: '700', fontSize: 15 },
-  headerTitle: { fontSize: 22, fontWeight: '700', color: C.navy },
+  section: { paddingHorizontal: 16, paddingTop: 20 },
+  sectionLabel: { fontSize: 11, fontWeight: '700', color: C.muted, textTransform: 'uppercase', letterSpacing: 1.5, marginBottom: 8 },
+  sectionCard: { backgroundColor: C.white, borderRadius: 16, borderWidth: 1, borderColor: C.border, overflow: 'hidden', shadowColor: '#000', shadowOffset: { width: 0, height: 1 }, shadowOpacity: 0.04, shadowRadius: 4, elevation: 2 },
+  menuItem: { flexDirection: 'row', alignItems: 'center', padding: 14, gap: 12 },
+  menuIconWrap: { width: 40, height: 40, borderRadius: 10, backgroundColor: '#eef4ff', justifyContent: 'center', alignItems: 'center' },
+  menuIcon: { fontSize: 20 },
+  menuText: { flex: 1 },
+  menuLabel: { fontSize: 15, fontWeight: '700', color: C.navy },
+  menuSub: { fontSize: 12, color: C.muted, marginTop: 1 },
+  menuArrow: { fontSize: 22, color: C.muted, fontWeight: '300' },
+  divider: { height: 1, backgroundColor: C.border, marginLeft: 66 },
 
-  logoBlock:   { alignItems: 'center', marginBottom: 28 },
-  logoText:    { fontSize: 38, fontWeight: '900', fontStyle: 'italic', color: C.navy, letterSpacing: -0.5 },
-  sparkle:     { position: 'absolute', top: -10, right: '20%' },
-  logoSub:     { fontSize: 14, color: C.textMed, marginTop: 2 },
-
-  menuCard:    { flexDirection: 'row', alignItems: 'center', backgroundColor: C.gray, borderRadius: 14, borderWidth: 1, borderColor: C.grayBorder, padding: 14, marginBottom: 12 },
-  iconCircle:  { width: 54, height: 54, borderRadius: 27, backgroundColor: C.yellow, justifyContent: 'center', alignItems: 'center', marginRight: 14 },
-  menuText:    { flex: 1 },
-  menuLabel:   { fontSize: 17, fontWeight: '700', color: C.navy, marginBottom: 2 },
-  menuSub:     { fontSize: 12, color: C.textMed, lineHeight: 17 },
-
-  bottomNav:   { position: 'absolute', bottom: 0, left: 0, right: 0, height: NAV_H, paddingBottom: Platform.OS === 'ios' ? 18 : 4, paddingHorizontal: 16, justifyContent: 'flex-end' },
-  navPill:     { flexDirection: 'row', backgroundColor: C.bg, borderRadius: 24, borderWidth: 1, borderColor: C.grayBorder, paddingVertical: 8, paddingHorizontal: 8, justifyContent: 'space-around', elevation: 4, shadowColor: '#000', shadowOpacity: 0.06, shadowRadius: 8, shadowOffset: { width: 0, height: -2 } },
-  navItem:     { flex: 1, alignItems: 'center', paddingVertical: 2 },
-  navLabel:    { fontSize: 11, color: C.navInactive, marginTop: 2 },
-  navLabelActive: { fontSize: 11, color: C.navy, fontWeight: '700', marginTop: 2 },
+  footer: { padding: 24, alignItems: 'center', paddingBottom: 32 },
+  footerBrand: { fontSize: 14, fontWeight: '800', color: C.navy, marginBottom: 4 },
+  footerText: { fontSize: 12, color: C.muted },
 });

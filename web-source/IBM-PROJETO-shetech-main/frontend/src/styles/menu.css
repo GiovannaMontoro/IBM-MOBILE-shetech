@@ -1,0 +1,66 @@
+@import url('https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700;800&display=swap');
+
+html, body { margin: 0; padding: 0; }
+
+/* =========================================================
+   Menu lateral Guardião (compartilhado: React + páginas HTML)
+   ========================================================= */
+:root{
+  --gd-navy:#002a63; --gd-navy-2:#003a8a; --gd-blue:#1a5fd0; --gd-yellow:#fcd116;
+  --gd-bg:#f3f6fb; --gd-surface:#ffffff; --gd-surface-2:#f7f9fd; --gd-line:#dfe6f1;
+  --gd-text:#0f1b33; --gd-muted:#5a6882;
+  --gd-ok:#0f8a4b; --gd-ok-bg:#e5f6ec; --gd-warn:#b45309; --gd-warn-bg:#fff3dc;
+  --gd-bad:#c62828; --gd-bad-bg:#fde8e8;
+  --gd-shadow:0 1px 2px rgba(10,30,70,.06),0 8px 24px rgba(10,30,70,.06);
+  --gd-font:Manrope,system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;
+}
+.gd-app{display:flex;min-height:100vh;background:var(--gd-bg);font-family:var(--gd-font);color:var(--gd-text);-webkit-font-smoothing:antialiased}
+.gd-app *,.gd-app *::before,.gd-app *::after{box-sizing:border-box}
+.gd-content{flex:1;min-width:0}
+
+.gd-side{position:sticky;top:0;flex:none;width:240px;height:100vh;background:var(--gd-navy-2);border-right:1px solid rgba(255,255,255,.08);color:#fff;display:flex;flex-direction:column;padding:26px 14px 20px;transition:width .22s ease;z-index:6}
+.gd-logo{display:flex;align-items:center;gap:10px;padding:0 10px;height:36px;font-weight:800;font-size:1.55rem;letter-spacing:-.03em;white-space:nowrap}
+.gd-logo .mk{display:none;width:28px;height:28px;flex:none}
+.gd-wm{display:flex;align-items:flex-start;gap:3px}
+.gd-wm i{width:6px;height:6px;border-radius:50%;background:var(--gd-yellow);margin-top:3px}
+.gd-nav{display:flex;flex-direction:column;gap:6px;margin-top:34px;flex:1}
+.gd-item{display:flex;align-items:center;gap:14px;padding:12px 14px;border:0;background:none;color:#fff;border-radius:12px;cursor:pointer;font:600 1rem var(--gd-font);text-align:left;white-space:nowrap;text-decoration:none;transition:background .15s ease,color .15s ease,box-shadow .15s ease}
+.gd-item:hover{background:rgba(255,255,255,.15);color:#fff;box-shadow:0 2px 8px rgba(0,0,0,.18)}
+.gd-item[aria-current="page"]{background:#1d6be0;color:#fff;box-shadow:0 6px 16px rgba(0,20,70,.35)}
+.gd-item svg{width:22px;height:22px;flex:none;stroke:currentColor;fill:none;stroke-width:1.9;stroke-linecap:round;stroke-linejoin:round}
+.gd-out{margin-top:auto;border-top:1px solid rgba(255,255,255,.12);border-radius:12px;padding-top:16px;color:#fff}
+.gd-item:focus-visible,.gd-collapse:focus-visible{outline:3px solid var(--gd-yellow);outline-offset:2px}
+.gd-collapse{position:absolute;right:-15px;top:30px;width:30px;height:30px;border-radius:50%;border:1px solid var(--gd-line);background:var(--gd-surface);color:var(--gd-text);cursor:pointer;display:grid;place-items:center;box-shadow:var(--gd-shadow);padding:0}
+.gd-collapse svg{width:16px;height:16px;stroke:currentColor;fill:none;stroke-width:2.4;stroke-linecap:round;stroke-linejoin:round;transition:transform .22s}
+.gd-side.min{width:78px}
+.gd-side.min .gd-lbl,.gd-side.min .gd-wm{display:none}
+.gd-side.min .gd-logo{justify-content:center;padding:0}
+.gd-side.min .gd-logo .mk{display:block}
+.gd-side.min .gd-logo img{display:none}
+.gd-side.min .gd-item{justify-content:center;padding:12px}
+.gd-side.min .gd-collapse svg{transform:rotate(180deg)}
+
+/* ── DARK THEME (applies site-wide via data-theme on <html>) ── */
+[data-theme="dark"]{
+  --gd-bg:#0d1520;
+  --gd-surface:#151f2e;
+  --gd-surface-2:#1a2637;
+  --gd-line:#253245;
+  --gd-text:#e2eaf6;
+  --gd-muted:#8fa0bc;
+  --gd-shadow:0 1px 2px rgba(0,0,0,.3),0 8px 24px rgba(0,0,0,.3);
+}
+[data-theme="dark"] body{background:var(--gd-bg);color:var(--gd-text)}
+[data-theme="dark"] .gd-app{background:var(--gd-bg)}
+
+/* ── RODAPÉ COMPARTILHADO ────────────────────────────────── */
+.rodape { background: #002a63; font-family: Manrope, system-ui, -apple-system, "Segoe UI", sans-serif; }
+.rodape__inner { display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 16px; padding: 22px 24px; max-width: 1100px; margin: 0 auto; }
+.rodape__marca  { display: flex; align-items: center; gap: 8px; color: #fff; font-size: 1rem; font-weight: 800; }
+.rodape__logo-bb { height: 32px; width: auto; display: block; flex-shrink: 0; }
+.rodape__parceria { font-size: .75rem; font-weight: 500; color: #aabbdd; margin-left: 10px; border-left: 1px solid rgba(255,255,255,.2); padding-left: 10px; }
+.rodape__parceria strong { font-weight: 800; color: #dbe4ff; }
+.rodape__links  { display: flex; flex-wrap: wrap; gap: 18px; }
+.rodape__links a { font-size: .8rem; font-weight: 700; color: #fff; text-decoration: none; font-family: inherit; }
+.rodape__links a:hover { text-decoration: underline; }
+@media (max-width: 820px) { .rodape__inner { padding: 18px 16px; } }

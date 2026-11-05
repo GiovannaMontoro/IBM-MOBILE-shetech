@@ -254,7 +254,8 @@ export default function HomeScreen({ navigation }) {
         <View style={s.cardsBlock}>
 
           {/* Card 1 — Guardião */}
-          <TouchableOpacity style={s.cardBlue} activeOpacity={0.85}>
+          <TouchableOpacity style={s.cardBlue} activeOpacity={0.85}
+            onPress={() => navigation.navigate('InicioOpcao')}>
             <View style={s.iconCircleWhite}>
               <ShieldCheckIcon size={26} color={C.cardBlue} />
             </View>
@@ -266,7 +267,8 @@ export default function HomeScreen({ navigation }) {
           </TouchableOpacity>
 
           {/* Card 2 — BB Decision */}
-          <TouchableOpacity style={s.cardYellow} activeOpacity={0.85}>
+          <TouchableOpacity style={s.cardYellow} activeOpacity={0.85}
+            onPress={() => navigation.navigate('InicioOpcao')}>
             <View style={s.iconCircleNavy}>
               <BarChartIcon size={26} />
             </View>
@@ -283,17 +285,17 @@ export default function HomeScreen({ navigation }) {
       {/* Barra de navegação */}
       <View style={s.bottomNav}>
         <View style={s.navPill}>
-          <TouchableOpacity style={s.navItem}>
+          <TouchableOpacity style={s.navItem} onPress={() => navigation.navigate('InicioOpcao')}>
             <HomeIcon active={true} />
             <Text style={s.navLabelActive}>Início</Text>
           </TouchableOpacity>
-          <TouchableOpacity style={s.navItem} onPress={() => navigation.navigate('Main', { screen: 'Learn' })}>
+          <TouchableOpacity style={s.navItem} onPress={() => navigation.navigate('Login')}>
             <BookIcon />
-            <Text style={s.navLabel}>Aprender</Text>
+            <Text style={s.navLabel}>Login</Text>
           </TouchableOpacity>
-          <TouchableOpacity style={s.navItem} onPress={() => navigation.navigate('Main', { screen: 'Profile' })}>
+          <TouchableOpacity style={s.navItem} onPress={() => navigation.navigate('Cadastro')}>
             <ProfileIcon />
-            <Text style={s.navLabel}>Perfil</Text>
+            <Text style={s.navLabel}>Cadastro</Text>
           </TouchableOpacity>
         </View>
       </View>

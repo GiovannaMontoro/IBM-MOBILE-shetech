@@ -132,7 +132,8 @@ export default function LoginScreen({ navigation }) {
         </View>
 
         {/* Botão entrar */}
-        <TouchableOpacity style={s.btnPrimary} activeOpacity={0.85}>
+        <TouchableOpacity style={s.btnPrimary} activeOpacity={0.85}
+          onPress={() => navigation.navigate('InicioOpcao')}>
           <Text style={s.btnPrimaryText}>Entrar</Text>
         </TouchableOpacity>
 
