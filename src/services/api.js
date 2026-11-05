@@ -56,20 +56,36 @@ async function handleResponse(response) {
 
 async function post(path, body, authenticated = false) {
   const headers = authenticated ? buildHeaders() : { 'Content-Type': 'application/json' };
-  const response = await fetch(`${API_BASE}${path}`, {
-    method: 'POST',
-    headers,
-    body: JSON.stringify(body),
-  });
-  return handleResponse(response);
+  const controller = new AbortController();
+  const timer = setTimeout(() => controller.abort(), 30000);
+  try {
+    const response = await fetch(`${API_BASE}${path}`, {
+      method: 'POST',
+      headers,
+      body: JSON.stringify(body),
+      signal: controller.signal,
+    });
+    return handleResponse(response);
+  } finally {
+    clearTimeout(timer);
+  }
+
 }
 
 async function get(path) {
-  const response = await fetch(`${API_BASE}${path}`, {
-    method: 'GET',
-    headers: buildHeaders(),
-  });
-  return handleResponse(response);
+  const controller = new AbortController();
+  const timer = setTimeout(() => controller.abort(), 30000);
+  try {
+    const response = await fetch(`${API_BASE}${path}`, {
+      method: 'GET',
+      headers: buildHeaders(),
+      signal: controller.signal,
+    });
+    return handleResponse(response);
+  } finally {
+    clearTimeout(timer);
+  }
+
 }
 
 async function put(path, body) {
