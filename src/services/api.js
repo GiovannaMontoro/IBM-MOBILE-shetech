@@ -13,7 +13,9 @@
 // ─── Configuração da URL base ─────────────────────────────────────────────────
 // Emulador Android padrão usa 10.0.2.2 para acessar o localhost da máquina.
 // Para celular físico, troque pelo IP da sua rede (ex: http://192.168.1.10:8000).
-export const API_BASE = 'http://10.0.2.2:8000';
+// Emulador Android: http://10.0.2.2:8000
+// Celular físico: use o IP da máquina na mesma rede Wi-Fi
+export const API_BASE = 'http://192.168.0.102:8000';
 
 // ─── Token de autenticação (injetado pelo authService após login) ─────────────
 let _authToken = null;
