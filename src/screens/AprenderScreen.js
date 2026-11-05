@@ -231,7 +231,7 @@ export default function AprenderScreen({ navigation }) {
           ))}
           {filtered.length === 0 && (
             <View style={s.empty}>
-              <Text style={s.emptyText}>Nenhum tópico encontrado para "{search}".</Text>
+              <Text style={s.emptyText}>{`Nenhum tópico encontrado para "${search}".`}</Text>
             </View>
           )}
         </View>

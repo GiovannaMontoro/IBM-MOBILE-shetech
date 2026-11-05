@@ -52,41 +52,40 @@ export default function MonitoramentoGuardiaoScreen({ navigation }) {
     <View style={s.root}>
       <StatusBar barStyle="light-content" backgroundColor={C.blue} />
 
-      {/* Cabeçalho azul */}
-      <View style={s.hero}>
-        <TouchableOpacity style={s.backBtn} onPress={() => navigation.goBack()} activeOpacity={0.8}>
-          <ArrowLeft />
-        </TouchableOpacity>
-
-        <View style={s.heroText}>
-          <View style={s.chip}>
-            <View style={s.dot} />
-            <Text style={s.chipText}>Monitoramento ativo 24h</Text>
-          </View>
-          <Text style={s.heroTitle}>Guardião</Text>
-          <Text style={s.heroDesc}>
-            Sua proteção contra golpes de engenharia social.{'\n'}
-            Cole uma mensagem, foto, link ou descrição e a IA{'\n'}
-            mostra se há sinais de fraude.
-          </Text>
-          <TouchableOpacity style={s.ctaBtn}
-            onPress={() => navigation.navigate('Guardiao')} activeOpacity={0.88}>
-            <Text style={s.ctaText}>Testar mensagem</Text>
-            <Svg width={18} height={18} viewBox="0 0 24 24" fill="none">
-              <Path d="M5 12h14M13 6l6 6-6 6" stroke={C.navy}
-                strokeWidth={2.2} strokeLinecap="round" strokeLinejoin="round" />
-            </Svg>
+      <ScrollView style={s.scroll} showsVerticalScrollIndicator={false}>
+        {/* Cabeçalho azul — dentro do ScrollView para rolar junto */}
+        <View style={s.hero}>
+          <TouchableOpacity style={s.backBtn} onPress={() => navigation.goBack()} activeOpacity={0.8}>
+            <ArrowLeft />
           </TouchableOpacity>
+
+          <View style={s.heroText}>
+            <View style={s.chip}>
+              <View style={s.dot} />
+              <Text style={s.chipText}>Monitoramento ativo 24h</Text>
+            </View>
+            <Text style={s.heroTitle}>Guardião</Text>
+            <Text style={s.heroDesc}>
+              Sua proteção contra golpes de engenharia social.{'\n'}
+              Cole uma mensagem, foto, link ou descrição e a IA{'\n'}
+              mostra se há sinais de fraude.
+            </Text>
+            <TouchableOpacity style={s.ctaBtn}
+              onPress={() => navigation.navigate('Guardiao')} activeOpacity={0.88}>
+              <Text style={s.ctaText}>Testar mensagem</Text>
+              <Svg width={18} height={18} viewBox="0 0 24 24" fill="none">
+                <Path d="M5 12h14M13 6l6 6-6 6" stroke={C.navy}
+                  strokeWidth={2.2} strokeLinecap="round" strokeLinejoin="round" />
+              </Svg>
+            </TouchableOpacity>
+          </View>
+
+          <Image
+            source={require('../../assets/images/MascoteComEscudo2.png')}
+            style={s.mascote} resizeMode="contain"
+          />
         </View>
 
-        <Image
-          source={require('../../assets/images/MascoteComEscudo2.png')}
-          style={s.mascote} resizeMode="contain"
-          defaultSource={require('../../assets/images/fundo.png')}
-        />
-      </View>
-
-      <ScrollView style={s.scroll} showsVerticalScrollIndicator={false}>
 
         {/* COMO FUNCIONA */}
         <View style={s.section}>
@@ -133,7 +132,7 @@ export default function MonitoramentoGuardiaoScreen({ navigation }) {
             onPress={() => navigation.navigate('TesteMensagem')} activeOpacity={0.8}>
             <Text style={s.extraLinkText}>
               Quer treinar o olhar?{' '}
-              <Text style={s.extraLinkBold}>Faça o quiz "Essa mensagem é um golpe?"</Text>
+              <Text style={s.extraLinkBold}>{'Faça o quiz "Essa mensagem é um golpe?"'}</Text>
             </Text>
           </TouchableOpacity>
         </View>

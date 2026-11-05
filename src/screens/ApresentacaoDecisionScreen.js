@@ -25,41 +25,40 @@ export default function ApresentacaoDecisionScreen({ navigation }) {
     <View style={s.root}>
       <StatusBar barStyle="light-content" backgroundColor={C.navy} />
 
-      {/* Hero */}
-      <View style={s.hero}>
-        <TouchableOpacity style={s.backBtn} onPress={() => navigation.goBack()} activeOpacity={0.8}>
-          <Svg width={22} height={22} viewBox="0 0 24 24" fill="none">
-            <Path d="M19 12H5M5 12l7 7M5 12l7-7" stroke={C.white} strokeWidth={2.2} strokeLinecap="round" strokeLinejoin="round" />
-          </Svg>
-        </TouchableOpacity>
-
-        <View style={s.heroBody}>
-          <View style={s.heroTextBlock}>
-            <View style={s.chip}>
-              <View style={s.dot} />
-              <Text style={s.chipText}>Simulador de decisões financeiras</Text>
-            </View>
-            <Text style={s.heroTitle}>BB Decision</Text>
-            <Text style={s.heroDesc}>
-              Simule decisões financeiras antes de tomá-las. Pergunte como numa conversa
-              e veja lado a lado como ficam seus números hoje e no cenário alternativo.
-            </Text>
-            <TouchableOpacity style={s.ctaBtn}
-              onPress={() => navigation.navigate('BBDecision')} activeOpacity={0.88}>
-              <Text style={s.ctaText}>Fazer uma simulação</Text>
-              <Svg width={18} height={18} viewBox="0 0 24 24" fill="none">
-                <Path d="M5 12h14M13 6l6 6-6 6" stroke={C.navy}
-                  strokeWidth={2.2} strokeLinecap="round" strokeLinejoin="round" />
-              </Svg>
-            </TouchableOpacity>
-          </View>
-          <Image source={require('../../assets/images/Amascote.png')}
-            style={s.mascote} resizeMode="contain"
-            defaultSource={require('../../assets/images/fundo.png')} />
-        </View>
-      </View>
-
       <ScrollView style={s.scroll} showsVerticalScrollIndicator={false}>
+        {/* Hero — dentro do ScrollView para rolar junto com o conteúdo */}
+        <View style={s.hero}>
+          <TouchableOpacity style={s.backBtn} onPress={() => navigation.goBack()} activeOpacity={0.8}>
+            <Svg width={22} height={22} viewBox="0 0 24 24" fill="none">
+              <Path d="M19 12H5M5 12l7 7M5 12l7-7" stroke={C.white} strokeWidth={2.2} strokeLinecap="round" strokeLinejoin="round" />
+            </Svg>
+          </TouchableOpacity>
+
+          <View style={s.heroBody}>
+            <View style={s.heroTextBlock}>
+              <View style={s.chip}>
+                <View style={s.dot} />
+                <Text style={s.chipText}>Simulador de decisões financeiras</Text>
+              </View>
+              <Text style={s.heroTitle}>BB Decision</Text>
+              <Text style={s.heroDesc}>
+                Simule decisões financeiras antes de tomá-las. Pergunte como numa conversa
+                e veja lado a lado como ficam seus números hoje e no cenário alternativo.
+              </Text>
+              <TouchableOpacity style={s.ctaBtn}
+                onPress={() => navigation.navigate('BBDecision')} activeOpacity={0.88}>
+                <Text style={s.ctaText}>Fazer uma simulação</Text>
+                <Svg width={18} height={18} viewBox="0 0 24 24" fill="none">
+                  <Path d="M5 12h14M13 6l6 6-6 6" stroke={C.navy}
+                    strokeWidth={2.2} strokeLinecap="round" strokeLinejoin="round" />
+                </Svg>
+              </TouchableOpacity>
+            </View>
+            <Image source={require('../../assets/images/Amascote.png')}
+              style={s.mascote} resizeMode="contain" />
+          </View>
+        </View>
+
 
         {/* COMO FUNCIONA */}
         <View style={s.section}>

@@ -41,16 +41,16 @@ export default function ProfileScreen({ navigation }) {
   const [confirmaSenha, setConfirmaSenha] = useState('');
   const [showSenhas, setShowSenhas]       = useState({ atual: false, nova: false, confirma: false });
 
-  useEffect(() => {
-    loadData();
-  }, []);
-
-  async function loadData() {
+  const loadData = useCallback(async () => {
     const p = await getProfile();
     if (p) { setProfile2(p); setEditData(p); }
     const h = await getHistory();
     setHistory2(h.slice(0, 5));
-  }
+  }, []);
+
+  useEffect(() => {
+    loadData(); // eslint-disable-line react-hooks/set-state-in-effect
+  }, [loadData]);
 
   function startEdit() {
     setEditData({ ...profile });

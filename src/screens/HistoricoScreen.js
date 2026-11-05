@@ -36,16 +36,12 @@ export default function HistoricoScreen({ navigation }) {
   const [history, setHistory2] = useState([]);
   const [refreshing, setRefreshing] = useState(false);
 
-  useFocusEffect(
-    useCallback(() => {
-      loadHistory();
-    }, [])
-  );
-
-  async function loadHistory() {
+  const loadHistory = useCallback(async () => {
     const h = await getHistory();
     setHistory2(h);
-  }
+  }, []);
+
+  useFocusEffect(loadHistory);
 
   async function onRefresh() {
     setRefreshing(true);
