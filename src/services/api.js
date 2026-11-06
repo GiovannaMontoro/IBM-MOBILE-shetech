@@ -10,6 +10,9 @@
  * O IP é exibido ao iniciar o backend com start.ps1.
  */
 
+import { fetch as expoFetch } from 'expo/fetch';
+import { Paths, File } from 'expo-file-system';
+
 // ─── Configuração da URL base ─────────────────────────────────────────────────
 // Emulador Android padrão usa 10.0.2.2 para acessar o localhost da máquina.
 // Para celular físico, troque pelo IP da sua rede (ex: http://192.168.1.10:8000).
@@ -160,12 +163,29 @@ export async function analyzeMessage(req) {
  * Usa multipart/form-data.
  */
 export async function analyzeFile({ file, userId, languageProfile, monitoringConsent, contextText }) {
+  // Resolve content:// → file:// (Android dispositivo físico)
+  let localUri = file.uri;
+  if (localUri.startsWith('content://')) {
+    const ext = file.name?.split('.').pop() ?? 'bin';
+    const dest = Paths.cache.uri + `upload_${Date.now()}.${ext}`;
+    await new File(localUri).copy(new File(dest));
+    localUri = dest;
+  }
+
+  // Cria um File do expo-file-system diretamente a partir da URI local.
+  // expo/fetch entende esse objeto nativamente — sem leitura de bytes manual,
+  // sem Blob, sem o { uri, name, type } que causava "unsupported FormDataPart".
+  const mimeType = file.mimeType ?? 'application/octet-stream';
+  const isImage =
+    mimeType.startsWith('image/') ||
+    /\.(jpe?g|png|webp|heic|heif)$/i.test(file.name ?? '');
+
+  const fileObj = isImage
+    ? new File(localUri)
+    : new File(localUri, file.name, { type: mimeType });
+
   const form = new FormData();
-  form.append('file', {
-    uri: file.uri,
-    name: file.name,
-    type: file.mimeType ?? 'application/octet-stream',
-  });
+  form.append('file', fileObj);
   form.append('user_id', userId ?? '');
   form.append('language_profile', languageProfile ?? 'standard');
   form.append('monitoring_consent', String(monitoringConsent ?? true));
@@ -176,7 +196,8 @@ export async function analyzeFile({ file, userId, languageProfile, monitoringCon
     headers['Authorization'] = `Bearer ${_authToken}`;
   }
 
-  const response = await fetch(`${API_BASE}/api/guardiao/analyze-file`, {
+  // expo/fetch gera o Content-Type multipart/form-data automaticamente
+  const response = await expoFetch(`${API_BASE}/api/guardiao/analyze-file`, {
     method: 'POST',
     headers,
     body: form,
