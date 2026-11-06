@@ -43,3 +43,7 @@ yarn-error.*
 /backend/venv/
 /backend/venv_backup_*/
 
+/backend/venv/
+/backend/venv-backup-*/
+__pycache__/
+*.pyc
