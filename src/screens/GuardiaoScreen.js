@@ -357,14 +357,22 @@ export default function GuardiaoScreen({ navigation }) {
             </View>
           )}
 
+          {/* Aviso de análise de imagem em andamento */}
+          {loading && attachment?.type === 'image' && (
+            <View style={s.imageLoadingRow}>
+              <ActivityIndicator color={C.blue} size="small" />
+              <Text style={s.imageLoadingText}>Aguarde, estamos analisando sua imagem…</Text>
+            </View>
+          )}
+
           {/* Botão analisar */}
           <TouchableOpacity
-            style={[s.submitBtn, (!message.trim() && !attachment) && s.submitBtnDisabled]}
+            style={[s.submitBtn, (loading || (!message.trim() && !attachment)) && s.submitBtnDisabled]}
             onPress={handleSubmit}
             disabled={loading || (!message.trim() && !attachment)}
             activeOpacity={0.88}
           >
-            {loading
+            {loading && attachment?.type !== 'image'
               ? <ActivityIndicator color={C.white} />
               : <Text style={s.submitBtnText}>🔍 Analisar mensagem</Text>}
           </TouchableOpacity>
@@ -587,6 +595,14 @@ const s = StyleSheet.create({
   },
   submitBtnDisabled: { backgroundColor: '#9ca3af' },
   submitBtnText: { color: C.white, fontWeight: '800', fontSize: 15 },
+
+  // Aviso de carregamento de imagem
+  imageLoadingRow: {
+    flexDirection: 'row', alignItems: 'center', gap: 10,
+    backgroundColor: '#eef4ff', borderRadius: 10, padding: 12,
+    marginBottom: 12, borderWidth: 1, borderColor: '#bfdbfe',
+  },
+  imageLoadingText: { fontSize: 13, color: C.navy, fontWeight: '600', flex: 1 },
 
   // Erros
   errorBox: {
