@@ -16,6 +16,7 @@ MULTIMODAL (NOVO):
 
 from __future__ import annotations
 
+import uuid
 from enum import Enum
 from typing import Optional
 
@@ -33,6 +34,7 @@ from app.guardiao.multimodal import (
     MAX_FILE_BYTES,
 )
 from app.config import settings
+from app.cloudant_store import store_analysis_event
 
 router = APIRouter()
 
@@ -304,7 +306,23 @@ def analyze_message(request: GuardiaoRequest) -> GuardiaoResponse:
             },
         )
 
-    return _build_response(result, request.input_channel.value, request.language_profile.value)
+    response = _build_response(result, request.input_channel.value, request.language_profile.value)
+
+    # Grava evento no Cloudant — falha silenciosa, não bloqueia a resposta.
+    try:
+        store_analysis_event(
+            event_id=str(uuid.uuid4()),
+            input_channel=request.input_channel.value,
+            language_profile=request.language_profile.value,
+            risk_label=response.risk_label,
+            risk_score=response.risk_score,
+            requires_intervention=response.requires_intervention,
+            requires_human_review=response.requires_human_review,
+        )
+    except Exception:
+        pass  # nunca interrompe a entrega da resposta ao app
+
+    return response
 
 
 @router.post(
@@ -440,7 +458,23 @@ async def analyze_file(
             },
         )
 
-    return _build_response(result, input_channel, lang_profile)
+    response = _build_response(result, input_channel, lang_profile)
+
+    # Grava evento no Cloudant — falha silenciosa, não bloqueia a resposta.
+    try:
+        store_analysis_event(
+            event_id=str(uuid.uuid4()),
+            input_channel=input_channel,
+            language_profile=lang_profile,
+            risk_label=response.risk_label,
+            risk_score=response.risk_score,
+            requires_intervention=response.requires_intervention,
+            requires_human_review=response.requires_human_review,
+        )
+    except Exception:
+        pass  # nunca interrompe a entrega da resposta ao app
+
+    return response
 
 
 @router.get(

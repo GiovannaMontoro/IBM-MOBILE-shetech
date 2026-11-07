@@ -57,6 +57,14 @@ class Settings(BaseSettings):
     # SQLite local — arquivo criado em backend/shetech.db
     database_url: str = "sqlite:///./shetech.db"
 
+    # ── IBM Cloudant — eventos de análise ─────────────────────────────────────
+    # Banco: shetech_analises (instância watsonx-Hackathon Cloudant)
+    # cloudant_enabled=False → integração desativada (padrão seguro)
+    cloudant_enabled: bool = False
+    cloudant_url: str = ""
+    cloudant_apikey: str = ""
+    cloudant_db: str = "shetech_analises"
+
     # ── Segurança ─────────────────────────────────────────────────────────────
     max_input_length: int = 2000
     prompt_injection_guard: bool = True
