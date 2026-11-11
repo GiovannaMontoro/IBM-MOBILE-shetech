@@ -17,6 +17,7 @@ import {
 } from 'react-native';
 import Svg, { Path, Circle, Rect } from 'react-native-svg';
 import { getProfile, saveProfile, getHistory, clearHistory } from '../services/storage';
+import { getMe, updateMe } from '../services/api';
 
 const { width } = Dimensions.get('window');
 const SB_H = Platform.OS === 'android' ? 28 : 44;
@@ -42,8 +43,26 @@ export default function ProfileScreen({ navigation }) {
   const [showSenhas, setShowSenhas]       = useState({ atual: false, nova: false, confirma: false });
 
   const loadData = useCallback(async () => {
-    const p = await getProfile();
-    if (p) { setProfile2(p); setEditData(p); }
+    // Tenta sincronizar o perfil com o backend (quando autenticado).
+    // Em caso de falha (offline ou não autenticado), usa o cache local.
+    try {
+      const remoteUser = await getMe();
+      const merged = {
+        nome: remoteUser.nome,
+        email: remoteUser.email,
+        telefone: remoteUser.telefone ?? '',
+        cpf: remoteUser.cpf ?? '',
+        tema: remoteUser.tema ?? 'claro',
+        notificacoes: remoteUser.notificacoes ?? true,
+      };
+      await saveProfile(merged);
+      setProfile2(merged);
+      setEditData(merged);
+    } catch {
+      // offline ou token expirado — usa cache local
+      const p = await getProfile();
+      if (p) { setProfile2(p); setEditData(p); }
+    }
     const h = await getHistory();
     setHistory2(h.slice(0, 5));
   }, []);
@@ -58,8 +77,36 @@ export default function ProfileScreen({ navigation }) {
   }
 
   async function saveEdit() {
-    await saveProfile({ ...profile, ...editData });
-    setProfile2(prev => ({ ...prev, ...editData }));
+    try {
+      // Persiste no backend (SQLite via API)
+      const updated = await updateMe({
+        nome: editData.nome,
+        telefone: editData.telefone,
+        cpf: editData.cpf,
+        tema: editData.tema,
+        notificacoes: editData.notificacoes,
+      });
+      // Atualiza o cache local com os dados confirmados pelo servidor
+      const merged = {
+        ...profile,
+        nome: updated.nome,
+        email: updated.email,
+        telefone: updated.telefone ?? '',
+        cpf: updated.cpf ?? '',
+        tema: updated.tema ?? 'claro',
+        notificacoes: updated.notificacoes ?? true,
+      };
+      await saveProfile(merged);
+      setProfile2(merged);
+    } catch (err) {
+      // Fallback: salva apenas localmente se o backend estiver indisponível
+      await saveProfile({ ...profile, ...editData });
+      setProfile2(prev => ({ ...prev, ...editData }));
+      const msg = err instanceof Error ? err.message : 'Erro ao salvar.';
+      Alert.alert('Aviso', `Dados salvos localmente. Sincronização pendente: ${msg}`);
+      setEditing(false);
+      return;
+    }
     setEditing(false);
     Alert.alert('Salvo', 'Dados pessoais atualizados com sucesso.');
   }
@@ -76,14 +123,24 @@ export default function ProfileScreen({ navigation }) {
     return null;
   }
 
-  function salvarSenha() {
+  async function salvarSenha() {
     if (!senhaAtual.trim()) { Alert.alert('Erro', 'Informe a senha atual.'); return; }
     const err = validarSenha(novaSenha);
     if (err) { Alert.alert('Senha inválida', err); return; }
     if (novaSenha !== confirmaSenha) { Alert.alert('Erro', 'As senhas não conferem.'); return; }
-    Alert.alert('Senha alterada', 'Sua senha foi atualizada.');
-    setSenhaAtual(''); setNovaSenha(''); setConfirmaSenha('');
-    setShowPassPanel(false);
+    try {
+      await updateMe({
+        senha_atual: senhaAtual,
+        nova_senha: novaSenha,
+        confirma_nova_senha: confirmaSenha,
+      });
+      Alert.alert('Senha alterada', 'Sua senha foi atualizada com sucesso.');
+      setSenhaAtual(''); setNovaSenha(''); setConfirmaSenha('');
+      setShowPassPanel(false);
+    } catch (err) {
+      const msg = err instanceof Error ? err.message : 'Erro ao alterar a senha.';
+      Alert.alert('Erro', msg);
+    }
   }
 
   async function toggle2FA(val) {

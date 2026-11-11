@@ -64,6 +64,8 @@ class Settings(BaseSettings):
     cloudant_url: str = ""
     cloudant_apikey: str = ""
     cloudant_db: str = "shetech_analises"
+    # Banco de simulações do BB Decision
+    cloudant_db_bbdecision: str = "shetech_bbdecision"
 
     # ── Segurança ─────────────────────────────────────────────────────────────
     max_input_length: int = 2000

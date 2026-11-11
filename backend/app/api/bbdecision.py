@@ -8,10 +8,13 @@ RC-02: consentimento do cliente.
 
 from __future__ import annotations
 
+import uuid
 from typing import Optional
 
-from fastapi import APIRouter, HTTPException, status
+from fastapi import APIRouter, Depends, HTTPException, status
+from fastapi.security import HTTPBearer, HTTPAuthorizationCredentials
 from pydantic import BaseModel, Field, field_validator
+from sqlalchemy.orm import Session
 
 from app.bbdecision.intent_parser import parse_intent
 from app.bbdecision.calculator import (
@@ -30,8 +33,30 @@ from app.bbdecision.scenarios import (
     HomePurchaseParams,
 )
 from app.guardiao.prompt_guard import InputValidationError
+from app.cloudant_store import store_simulation_event
 
 router = APIRouter()
+_bearer = HTTPBearer(auto_error=False)
+
+
+def _get_optional_user_id(
+    credentials: Optional[HTTPAuthorizationCredentials] = Depends(_bearer),
+) -> Optional[int]:
+    """
+    Extrai o user_id (inteiro SQLite) do token JWT quando presente.
+    Retorna None se não houver token ou se ele for inválido — sem lançar erro,
+    pois a autenticação é opcional neste endpoint.
+    """
+    if not credentials:
+        return None
+    try:
+        from app.db.security import decode_access_token
+        payload = decode_access_token(credentials.credentials)
+        if not payload:
+            return None
+        return int(payload.get("sub", 0)) or None
+    except Exception:
+        return None
 
 # Aviso obrigatório consolidado — RF-D-10, RN-06
 # Exibido UMA VEZ no topo da resposta (campo 'disclaimer').
@@ -192,7 +217,10 @@ def _run_calculator(intent: IntentResult) -> ScenarioResult:
         "não constituem garantia nem recomendação de investimento."
     ),
 )
-def simulate(request: BBDecisionRequest) -> BBDecisionResponse:
+def simulate(
+    request: BBDecisionRequest,
+    user_id_sqlite: Optional[int] = Depends(_get_optional_user_id),
+) -> BBDecisionResponse:
     """Endpoint principal do BB Decision."""
 
     # Carrega perfil sintético do usuário se disponível
@@ -228,6 +256,15 @@ def simulate(request: BBDecisionRequest) -> BBDecisionResponse:
 
     # Esclarecimento necessário
     if intent.clarification_needed:
+        store_simulation_event(
+            event_id=str(uuid.uuid4()),
+            scenario_type=intent.scenario_type,
+            language_profile=request.language_profile,
+            clarification_needed=True,
+            has_warnings=False,
+            warnings_count=0,
+            user_id_sqlite=user_id_sqlite,
+        )
         return BBDecisionResponse(
             scenario_type=intent.scenario_type,
             question_understood=intent.raw_question,
@@ -263,7 +300,7 @@ def simulate(request: BBDecisionRequest) -> BBDecisionResponse:
         language_profile=request.language_profile,
     )
 
-    return BBDecisionResponse(
+    response = BBDecisionResponse(
         scenario_type=calc_result.scenario_type,
         question_understood=intent.raw_question,
         current_path=PathSummary(label="Situação atual", data=calc_result.current_path),
@@ -275,6 +312,19 @@ def simulate(request: BBDecisionRequest) -> BBDecisionResponse:
         disclaimer=MANDATORY_DISCLAIMER,
         clarification_needed=False,
     )
+
+    # Grava evento no Cloudant (silencioso — não bloqueia resposta)
+    store_simulation_event(
+        event_id=str(uuid.uuid4()),
+        scenario_type=calc_result.scenario_type,
+        language_profile=request.language_profile,
+        clarification_needed=False,
+        has_warnings=bool(calc_result.warnings),
+        warnings_count=len(calc_result.warnings),
+        user_id_sqlite=user_id_sqlite,
+    )
+
+    return response
 
 
 @router.get("/health", summary="Verifica disponibilidade do BB Decision", tags=["Infraestrutura"])
