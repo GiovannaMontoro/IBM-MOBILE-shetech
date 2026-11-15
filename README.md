@@ -211,6 +211,8 @@ Com o backend e o Expo funcionando:
 
 ✅ O aplicativo estará preparado para os testes locais documentados.
 
+*A funcionalidade de análise por áudio na versão mobile está devidamente estruturada e implementada, porém ainda não realiza o processamento e a análise dos arquivos de áudio corretamente.
+
 ---
 
 ## 👩‍💻 Conheça a SheTech
